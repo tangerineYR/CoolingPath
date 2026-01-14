@@ -1,0 +1,54 @@
+erDiagram    
+    %% 1. 상단: 정적 원천 데이터 (Master)
+    BUILDING_FIXED {
+        integer build_id PK
+        double height "건물 높이 (m)"
+        integer floor "지상 층수"
+        polygon build_geometry "건물 형상"
+    }
+
+    ROADS_BUFFERED {
+        integer link_id PK
+        integer u "시작 노드 ID (경로 탐색용)"
+        integer v "종료 노드 ID (경로 탐색용)"
+        integer road_type "도로 유형 (가중치 계산용)"
+        double length "도로 길이 (거리 계산용)"
+        double area "도로 전체 면적"
+        polygon road_geometry "도로 형상"
+    }
+
+    %% 2. [Time Dimension] 시간축 데이터 (기준)
+    SOLAR_SCENARIO {
+        integer time_slot PK "시간대 (8~19)"
+        double sun_altitude "태양 고도"
+        double sun_azimuth "태양 방위각"
+    }
+
+    %% 3. [Dynamic] 시간대별 파생 데이터 (1:N 관계)
+    HOURLY_SHADOW {
+        integer shadow_id PK
+        integer build_id FK
+        integer time_slot FK 
+        polygon shadow_geometry "시간대별 그림자 형상"
+    }
+
+    HOURLY_LINK_STAT {
+        string stat_id PK
+        integer link_id FK
+        integer time_slot FK 
+        double shadow_area "시간대별 그늘 면적"
+        float shadow_ratio "시간대별 그늘 비율"
+    }
+
+    %% 관계 정의
+    %% 건물(1) : 그림자(N) -> 건물이 없으면 그림자도 없음
+    BUILDING_FIXED ||--o{ HOURLY_SHADOW : "Creates"
+    
+    %% 도로(1) : 통계(N) -> 도로가 없으면 통계도 없음
+    ROADS_BUFFERED ||--o{ HOURLY_LINK_STAT : "Has"
+
+    %% 시간(1) : 통계(N) -> 시간대별로 통계가 생성됨
+    SOLAR_SCENARIO ||--o{ HOURLY_LINK_STAT : "Defines"
+
+    %% 시간(1) : 그림자(N) -> 시간대별로 그림자가 생성됨
+    SOLAR_SCENARIO ||--o{ HOURLY_SHADOW : "Defines"
