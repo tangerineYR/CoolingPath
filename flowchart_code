@@ -1,0 +1,151 @@
+---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: '#ffffff'
+    edgeLabelBackground: '#ffffff'
+    tertiaryColor: '#f4f4f4'
+    lineColor: '#455A64'
+  layout: dagre
+---
+flowchart TB
+    %% ==================================================
+    %% [Process 1] 데이터 구축
+    %% ==================================================
+    subgraph Process_1["Process 1 : 데이터 구축"]
+        direction TB
+
+        %% 노드 정의
+        Building_GIS[/"건물 데이터"/]
+        Scenario[/"폭염 시나리오<br>(태양 고도 및 방위각)"/]
+        Road_GIS[/"보행도로 데이터"/]
+
+        Sim{"그늘<br>시뮬레이션"}
+        Poly["그늘<br>Polygon"]
+        Spatial_Join{"공간 조인<br>(Overlay)"}
+        
+        Link_DB[("Link<br>속성 DB")]
+        note_db["Table Schema:<br>- Link_ID<br>- Shadow_Ratio<br>- Safety_Flag"]
+    end
+
+    %% ==================================================
+    %% [Process 2] 서비스 실행
+    %% ==================================================
+    subgraph Process_2["Process 2 : 서비스 실행"]
+        direction TB
+
+        %% 입력 소스
+        subgraph P2_Header [" "]
+            direction TB
+            User(["출발지/목적지<br>설정"])
+            Weather[/"기상 API<br>(실시간 / Demo)"/]
+        end
+
+        Condition{"조건 확인<br>(28°C 이상 & 비 X)"}
+
+        %% 알고리즘 (메인 로직)
+        subgraph Algorithm[" "]
+            direction TB
+            Engine["Cooling Path<br>탐색"]
+            Filter["Filter:<br>최단시간 기준<br>+14% 이내"]
+            Sort["Sort:<br>그늘 비율 순"]
+            Select["Select:<br>Top 1 경로"]
+        end
+
+        %% 예외 처리
+        Msg_Option["안내 메시지<br>'지금은 쾌적해요/비가 와요'<br>+<br>[버튼: 그래도 그늘 경로 보기]"]
+        Normal_UI["🗺 일반 지도 화면<br>(최단 경로)"]
+
+        %% 결과 UI
+        UI_Cooling["메인 화면"]
+        
+        subgraph UI_Group[" "]
+            direction LR
+            Map_View["지도 표시:<br>최적 Cooling Path"]
+            KPI_Card["KPI 카드:<br>시간 / 그늘 / 안전"]
+        end
+        
+        Action{"다른 경로 보기"}
+        UI_Sub["전체 리스트<br>(최적 / 최단 / 큰길우선)"]
+    end
+
+    %% ==================================================
+    %% 연결 정보
+    %% ==================================================
+    %%P1 내부 연결
+    Building_GIS & Scenario --> Sim
+    Sim --> Poly
+    Poly --> Spatial_Join
+    Road_GIS --> Spatial_Join
+    Spatial_Join --> Link_DB
+    note_db -.- Link_DB
+
+    %%P2 내부 연결
+    User --> Condition
+    Weather --> Condition
+    
+    %%Link_DB와 Engine 연결
+    Link_DB ==> Engine
+    
+    Condition --"Yes"--> Engine
+    Condition --"No"--> Msg_Option
+
+    Msg_Option --> Normal_UI
+    Msg_Option -.-> |"Click"| Engine
+    
+    %%Engine 내부 연결
+    Engine --> Filter --> Sort --> Select
+    Select --> UI_Cooling
+
+    UI_Cooling --> UI_Group
+    UI_Cooling --> Action
+    Action --"Yes"--> UI_Sub
+
+    %% ==================================================
+    %% 스타일 정의
+    %% ==================================================
+    classDef default fill:#fff,stroke:#CFD8DC,stroke-width:2px,rx:5,ry:5
+    classDef transparent fill:none,stroke:none
+    
+    classDef input fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px,color:#E65100
+    classDef db fill:#E1F5FE,stroke:#0277BD,stroke-width:2px,stroke-dasharray: 5 5,color:#01579B
+    
+    classDef user fill:#ffffff,stroke:#EF6C00,stroke-width:3px,color:#E65100
+    classDef api fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20
+    
+    classDef decision fill:#FFE0B2,stroke:#FB8C00,stroke-width:2px,color:#E65100
+    classDef alert fill:#FFEBEE,stroke:#EF5350,stroke-width:2px,color:#B71C1C
+    classDef ui_gray fill:#78909C,stroke:#546E7A,stroke-width:2px,color:#fff
+    
+    classDef logic fill:#E8F5E9,stroke:#43A047,stroke-width:2px,color:#1B5E20
+    classDef ui_main fill:#37474F,stroke:#263238,stroke-width:2px,color:#fff
+
+    %% 노드 스타일 적용
+    Building_GIS:::input
+    Scenario:::input
+    Road_GIS:::input
+    Link_DB:::db
+    
+    GPS:::api
+    User:::user
+    Weather:::api
+    
+    Engine:::logic
+    Filter:::logic
+    Sort:::logic
+    Select:::logic
+    
+    Map_View:::ui_main
+    KPI_Card:::ui_main
+    Condition:::decision
+    Msg_Option:::alert
+    Normal_UI:::ui_gray
+    UI_Cooling:::ui_main
+    
+    UI_Group:::transparent
+    P2_Header:::transparent
+
+    %% 영역(Subgraph) 스타일
+    style Algorithm fill:#fff,stroke:#43A047,stroke-width:2px,stroke-dasharray: 5 5
+    style Process_1 fill:#F5F7F9,stroke:#CFD8DC,stroke-width:1px, rx:10, ry:10
+    style Process_2 fill:#FAFAFA,stroke:#B0BEC5,stroke-width:1px, rx:10, ry:10
