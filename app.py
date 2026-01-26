@@ -211,12 +211,12 @@ def load_shade_shelters():
     # 파일 경로 확인
     csv_path = "data/gangnamgu_shade_shelters.csv"
 
-    if not os.path.exists(csv_path):
-        return pd.DataFrame() 
-
     try:
-        df = pd.read_csv(csv_path, encoding='cp949')
-        return df 
+        if os.path.exists(path):
+                try: return pd.read_csv(path, encoding='cp949')
+                except: 
+                    try: return pd.read_csv(path, encoding='euc-kr')
+                    except: return pd.read_csv(path, encoding='utf-8')
 
     except Exception as e:
         st.warning(f"그늘막 데이터 로드 중 오류 발생: {e}")
