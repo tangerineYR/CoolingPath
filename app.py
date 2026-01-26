@@ -209,7 +209,7 @@ def load_shadow_data():
 @st.cache_data
 def load_shade_shelters():
     # 파일 경로 확인
-    csv_path = "data/gangnamgu_shade_shelters.csv"
+    path = "data/gangnamgu_shade_shelters.csv"
 
     try:
         if os.path.exists(path):
