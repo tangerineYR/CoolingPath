@@ -69,13 +69,13 @@ st.caption("햇빛은 피하고, 시원함만 밟고 가자! AI 고양이 까망
 # ======================================
 st.markdown("""
 <style>
-    /* 1. 구글 폰트에서 둥글둥글한 느낌의 폰트 호출 (나눔스퀘어라운드 대체제) */
-    @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
+    /* 1. 반듯하지만 끝이 둥근 '나눔스퀘어라운드' 폰트 로드 */
+    @import url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff');
     
-    /* 전체 배경 및 폰트 (크림 화이트) */
-    .stApp {
+    /* 서비스 전체 폰트 적용 */
+    html, body, [class*="css"], .stApp {
+        font-family: 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif !important;
         background-color: #FDFBF7;
-        font-family: 'Gaegu', 'Apple SD Gothic Neo', sans-serif !important;
     }
 
     /* [NEW] 상단 헤더(햄버거 메뉴 라인) 배경색 통일 */
@@ -96,7 +96,7 @@ st.markdown("""
         padding: 20px;
         box-shadow: 0 8px 20px rgba(126, 87, 194, 0.08);
         margin-bottom: 20px;
-        border: 2px solid #F0E6FF;
+        border: 2px solid #F2E9FF;
     }
 
     /* 4. 라디오 버튼 아래 불필요한 여백 제거 */
