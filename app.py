@@ -69,13 +69,10 @@ st.caption("햇빛은 피하고, 시원함만 밟고 가자! AI 고양이 까망
 # ======================================
 st.markdown("""
 <style>
-    /* 1. 말랑말랑하고 귀여운 느낌의 폰트 로드 (코트라 희망체) */
-    @import url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2205@1.0/KOTRA_HOPE.woff2');
-    
-    /* 서비스 전체에 폰트 강제 적용 */
-    html, body, [class*="css"], .stApp, kbd, samp, code, .stButton, .stMarkdown {
-        font-family: 'KOTRA_HOPE', sans-serif !important;
+    /* 1. 전체 배경 및 폰트 (크림 화이트) */
+    .stApp {
         background-color: #FDFBF7;
+        font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
     }
 
     /* [NEW] 상단 헤더(햄버거 메뉴 라인) 배경색 통일 */
@@ -90,13 +87,13 @@ st.markdown("""
     }
 
     /* 3. 카드(Card) 스타일 */
-    .css-card, .stMetric, div[data-testid="stExpander"] {
+    .css-card {
         background-color: #FFFFFF;
-        border-radius: 30px !important;
+        border-radius: 20px;
         padding: 20px;
-        box-shadow: 0 8px 20px rgba(126, 87, 194, 0.08);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         margin-bottom: 20px;
-        border: 2px solid #F2E9FF;
+        border: 1px solid #F0F0F0;
     }
 
     /* 4. 라디오 버튼 아래 불필요한 여백 제거 */
@@ -108,18 +105,17 @@ st.markdown("""
     .stButton>button {
         background-color: #7E57C2;
         color: white;
-        border-radius: 30px !important;
+        border-radius: 15px;
         border: none;
         height: 50px;
         font-weight: bold;
         width: 100%;
         transition: all 0.3s;
         box-shadow: 0 4px 6px rgba(126, 87, 194, 0.3);
-        font-size: 18px !important;
     }
     .stButton>button:hover {
         background-color: #673AB7;
-        transform: scale(1.03);
+        transform: translateY(-2px);
     }
 
     /* 6. 사이드바 스타일 */
