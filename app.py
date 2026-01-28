@@ -69,16 +69,12 @@ st.caption("햇빛은 피하고, 시원함만 밟고 가자! AI 고양이 까망
 # ======================================
 st.markdown("""
 <style>
-    * 1. 말랑말랑하고 귀여운 느낌의 폰트 로드 (코트라 희망체) */
+    /* 1. 말랑말랑하고 귀여운 느낌의 폰트 로드 (코트라 희망체) */
     @import url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2205@1.0/KOTRA_HOPE.woff2');
-
-    /* 서비스 전체 폰트 강제 적용 (상속 구조 무시하고 덮어쓰기) */
-    * {
-        font-family: 'KOTRA_HOPE', sans-serif !important;
-    }
     
-    /* 서비스 전체 폰트 적용 */
-    html, body, [class*="css"], .stApp {
+    /* 서비스 전체에 폰트 강제 적용 */
+    html, body, [class*="css"], .stApp, kbd, samp, code, .stButton, .stMarkdown {
+        font-family: 'KOTRA_HOPE', sans-serif !important;
         background-color: #FDFBF7;
     }
 
