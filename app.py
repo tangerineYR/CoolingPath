@@ -69,10 +69,13 @@ st.caption("햇빛은 피하고, 시원함만 밟고 가자! AI 고양이 까망
 # ======================================
 st.markdown("""
 <style>
-    /* 1. 전체 배경 및 폰트 (크림 화이트) */
+    /* 1. 구글 폰트에서 둥글둥글한 느낌의 폰트 호출 (나눔스퀘어라운드 대체제) */
+    @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
+    
+    /* 전체 배경 및 폰트 (크림 화이트) */
     .stApp {
         background-color: #FDFBF7;
-        font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+        font-family: 'Gaegu', 'Apple SD Gothic Neo', sans-serif !important;
     }
 
     /* [NEW] 상단 헤더(햄버거 메뉴 라인) 배경색 통일 */
@@ -87,13 +90,13 @@ st.markdown("""
     }
 
     /* 3. 카드(Card) 스타일 */
-    .css-card {
+    .css-card, .stMetric, div[data-testid="stExpander"] {
         background-color: #FFFFFF;
-        border-radius: 20px;
+        border-radius: 30px !important;
         padding: 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        box-shadow: 0 8px 20px rgba(126, 87, 194, 0.08);
         margin-bottom: 20px;
-        border: 1px solid #F0F0F0;
+        border: 2px solid #F0E6FF;
     }
 
     /* 4. 라디오 버튼 아래 불필요한 여백 제거 */
@@ -105,17 +108,18 @@ st.markdown("""
     .stButton>button {
         background-color: #7E57C2;
         color: white;
-        border-radius: 15px;
+        border-radius: 30px !important;
         border: none;
         height: 50px;
         font-weight: bold;
         width: 100%;
         transition: all 0.3s;
         box-shadow: 0 4px 6px rgba(126, 87, 194, 0.3);
+        font-size: 18px !important;
     }
     .stButton>button:hover {
         background-color: #673AB7;
-        transform: translateY(-2px);
+        transform: scale(1.03);
     }
 
     /* 6. 사이드바 스타일 */
