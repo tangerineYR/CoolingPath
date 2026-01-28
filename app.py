@@ -69,12 +69,16 @@ st.caption("햇빛은 피하고, 시원함만 밟고 가자! AI 고양이 까망
 # ======================================
 st.markdown("""
 <style>
-    /* 1. 반듯하지만 끝이 둥근 '나눔스퀘어라운드' 폰트 로드 */
-    @import url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumSquareRound.woff');
+    * 1. 말랑말랑하고 귀여운 느낌의 폰트 로드 (코트라 희망체) */
+    @import url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2205@1.0/KOTRA_HOPE.woff2');
+
+    /* 서비스 전체 폰트 강제 적용 (상속 구조 무시하고 덮어쓰기) */
+    * {
+        font-family: 'KOTRA_HOPE', sans-serif !important;
+    }
     
     /* 서비스 전체 폰트 적용 */
     html, body, [class*="css"], .stApp {
-        font-family: 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif !important;
         background-color: #FDFBF7;
     }
 
