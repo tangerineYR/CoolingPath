@@ -1,9 +1,1 @@
-streamlit
-pandas
-geopandas
-networkx
-folium
-streamlit-folium
-shapely
-pyproj
-scipy
+-e .

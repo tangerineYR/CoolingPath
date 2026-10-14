@@ -1,0 +1,17 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+credentials.json
+*.log
+.DS_Store
+Thumbs.db
