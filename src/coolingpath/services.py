@@ -3,6 +3,7 @@
 import streamlit as st
 import requests
 import os
+import math
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -87,30 +88,54 @@ def get_realtime_weather_forecast(lat, lon):
         "timezone": "Asia/Seoul",
     }
     try:
-        res = requests.get(url, params=params, timeout=5).json()
-        times = res["hourly"]["time"]
-        temps = res["hourly"]["temperature_2m"]
-        rains = res["hourly"]["precipitation"]
-        humidities = res["hourly"]["relative_humidity_2m"]
-        forecast = []
-        today = datetime.now(ZoneInfo("Asia/Seoul")).date()
-        for t, temp, rain, hum in zip(times, temps, rains, humidities):
-            dt = datetime.fromisoformat(t)
-            hour = dt.hour
-            if dt.date() == today and 8 <= hour <= 19:
-                forecast.append(
-                    {
-                        "time": f"{hour:02d}:00",
-                        "hour": hour,
-                        "temp": float(temp),
-                        "rain": float(rain),
-                        "humidity": float(hum),
-                    }
-                )
+        response = requests.get(url, params=params, timeout=5)
+        response.raise_for_status()
+        forecast = parse_weather_forecast(response.json())
         return {"raw_forecast": forecast, "mode": "realtime"}
-    except Exception:
-        st.warning("기온 API 호출 실패")
+    except (requests.RequestException, ValueError, TypeError, KeyError):
+        st.warning("기상 정보를 가져오지 못했습니다. Demo 모드를 선택해 주세요.")
         return {}
+
+
+def parse_weather_forecast(payload, today=None):
+    """Validate Open-Meteo hourly data before exposing it to routing/UI."""
+    if not isinstance(payload, dict) or not isinstance(payload.get("hourly"), dict):
+        raise ValueError("Missing hourly weather object")
+    hourly = payload["hourly"]
+    keys = ("time", "temperature_2m", "precipitation", "relative_humidity_2m")
+    arrays = [hourly[key] for key in keys]
+    if any(not isinstance(values, list) or not values for values in arrays):
+        raise ValueError("Hourly fields must be nonempty arrays")
+    if len({len(values) for values in arrays}) != 1:
+        raise ValueError("Hourly arrays must have equal lengths")
+    zone = ZoneInfo("Asia/Seoul")
+    today = today or datetime.now(zone).date()
+    forecast = []
+    seen = set()
+    for timestamp, temp, rain, humidity in zip(*arrays):
+        dt = datetime.fromisoformat(timestamp)
+        if dt.tzinfo is not None:
+            dt = dt.astimezone(zone)
+        if dt.minute or dt.second or dt.microsecond:
+            raise ValueError("Weather timestamps must be hourly")
+        slot = (dt.date(), dt.hour)
+        if slot in seen:
+            raise ValueError("Duplicate weather hour")
+        seen.add(slot)
+        values = (temp, rain, humidity)
+        if any(isinstance(v, bool) or not isinstance(v, (int, float))
+               or not math.isfinite(v) for v in values):
+            raise ValueError("Weather values must be finite numbers")
+        if rain < 0 or not 0 <= humidity <= 100:
+            raise ValueError("Invalid precipitation or relative humidity")
+        if dt.date() == today and 8 <= dt.hour <= 19:
+            forecast.append({
+                "time": f"{dt.hour:02d}:00", "hour": dt.hour,
+                "temp": float(temp), "rain": float(rain), "humidity": float(humidity),
+            })
+    if not forecast:
+        raise ValueError("No daytime forecast for today")
+    return sorted(forecast, key=lambda row: row["hour"])
 
 
 def get_env_at_time(env, time_slot):
