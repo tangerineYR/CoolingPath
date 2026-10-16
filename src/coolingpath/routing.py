@@ -6,6 +6,7 @@ import geopandas as gpd
 from scipy.spatial import KDTree
 from shapely.geometry import Point
 import itertools
+import warnings
 
 
 def build_node_index(roads_gdf):
@@ -48,7 +49,18 @@ def attach_shadow_by_hour(G, shadow_df):
 @st.cache_resource
 def build_base_graph_with_shadow(_roads_gdf, _shadow_df):
     G = nx.Graph()
-    for _, row in _roads_gdf.iterrows():
+    # Explicit simple-graph policy: shortest link, then stable link_id order.
+    # Keep an audit of omitted alternatives instead of silently overwriting.
+    if _roads_gdf["link_id"].duplicated().any():
+        raise ValueError("Road link_id values must be unique")
+    omitted = []
+    rows = sorted(_roads_gdf.iterrows(),
+                  key=lambda item: (float(item[1]["length"]), str(item[1]["link_id"])))
+    for _, row in rows:
+        if G.has_edge(row["u"], row["v"]):
+            retained = G[row["u"]][row["v"]]["link_id"]
+            omitted.append({"retained": retained, "omitted": row["link_id"]})
+            continue
         G.add_edge(
             row["u"],
             row["v"],
@@ -59,6 +71,14 @@ def build_base_graph_with_shadow(_roads_gdf, _shadow_df):
             tunnel=row.get("tunnel", 0),
             indoor=row.get("indoor", 0),
             crosswalk=row.get("crosswalk", 0),
+        )
+    G.graph["parallel_edge_policy"] = "minimum length, then lexical link_id"
+    G.graph["omitted_parallel_links"] = omitted
+    if omitted:
+        warnings.warn(
+            f"Parallel road policy omitted {len(omitted)} link(s); "
+            "shade alternatives are not exhaustive. See graph metadata.",
+            UserWarning, stacklevel=2,
         )
     attach_shadow_by_hour(G, _shadow_df)
     return G
@@ -131,7 +151,7 @@ def apply_costs(G, rain_mm=0.0):
         footbridge = bool(d.get("footbridge", 0))
         indoor = bool(d.get("indoor", 0))
         total_penalty = rain_penalty + calc_facility_penalty(d, "shortest")
-        d["cost_shortest"] = length * (1 + total_penalty)
+        d["cost_walkability"] = length * (1 + total_penalty)
         is_main = length >= 100 and (not tunnel) and (not footbridge) and (not indoor)
         main_factor = 1.0 if is_main else 1.5
         total_penalty = rain_penalty + calc_facility_penalty(d, "main")

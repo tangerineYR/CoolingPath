@@ -14,6 +14,10 @@ def test_data_and_graph_from_other_working_directory(tmp_path, monkeypatch):
     assert set(roads.link_id).intersection(shadow.link_id)
     graph = build_base_graph_with_shadow(roads, shadow)
     assert graph.number_of_edges() > 0
+    assert graph.number_of_edges() + len(graph.graph["omitted_parallel_links"]) == len(roads)
+    for omitted in graph.graph["omitted_parallel_links"]:
+        lengths = roads.set_index("link_id")["length"]
+        assert lengths[omitted["retained"]] <= lengths[omitted["omitted"]]
     assert all("crosswalk" in d for _, _, d in graph.edges(data=True))
 
 

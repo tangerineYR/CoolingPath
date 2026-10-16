@@ -147,6 +147,11 @@ def main():
     shadow_df = load_shadow_data()
     shade_shelters_df = load_shade_shelters()
     base_G = build_base_graph_with_shadow(roads_gdf, shadow_df)
+    if base_G.graph.get("omitted_parallel_links"):
+        st.caption(
+            "같은 두 지점을 잇는 도로는 가장 짧은 링크를 대표로 사용합니다. "
+            "일부 평행 도로의 그늘 대안은 비교에서 제외됩니다."
+        )
     node_tree, node_ids, node_xy = build_node_index(roads_gdf)
     if submit:
         st.session_state.is_loading = True
@@ -194,7 +199,7 @@ def main():
         apply_costs(G, rain_mm=rain_mm)
         if st.session_state.use_personal_mode:
             apply_personal_costs(G, rain_mm, st.session_state.personal_pref)
-        path_shortest = nx.shortest_path(G, u_node, v_node, weight="cost_shortest")
+        path_shortest = nx.shortest_path(G, u_node, v_node, weight="length")
         path_cooling = nx.shortest_path(G, u_node, v_node, weight="cost_cooling")
         path_main = nx.shortest_path(G, u_node, v_node, weight="cost_main")
         if st.session_state.use_personal_mode:
