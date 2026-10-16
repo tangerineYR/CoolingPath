@@ -8,13 +8,13 @@ def build_forecast_for_graph(env, avg_shadow, time_slot):
     graph_data = []
     for f in env["raw_forecast"]:
         base = f["temp"]
-        feels = base - avg_shadow * 5.0
+        shade_temp = base - avg_shadow * 5.0
         graph_data.append(
             {
                 "time": f["time"],
                 "hour": f["hour"],
                 "temp": base,
-                "feels_like": round(feels, 1),
+                "shade_adjusted_temp": round(shade_temp, 1),
                 "rain": f["rain"],
                 "humidity": f["humidity"],
             }

@@ -69,3 +69,11 @@ def test_no_silent_parallel_edge_loss():
         assert graph[0][1]["shadow_by_hour"][8] == 0.1
         assert graph.graph["omitted_parallel_links"] == [{"retained": 1, "omitted": 2}]
     build_base_graph_with_shadow.clear()
+
+
+def test_temperature_proxy_is_explicit():
+    from coolingpath.metrics import build_forecast_for_graph
+    env = {"raw_forecast": [dict(time="14:00", hour=14, temp=35, rain=0, humidity=60)]}
+    row = build_forecast_for_graph(env, 0.4, 14)[0]
+    assert row["shade_adjusted_temp"] == 33.0
+    assert "feels_like" not in row

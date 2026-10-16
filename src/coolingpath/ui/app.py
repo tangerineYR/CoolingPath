@@ -544,7 +544,7 @@ def main():
             )
             render_kpi_card(
                 c4,
-                "🌡 체감온도",
+                "🌡 그늘 보정 온도",
                 f"{kpi['temperature']['target']:.1f}℃",
                 f"{abs(kpi['temperature']['diff']):.1f}℃",
                 False,
@@ -579,7 +579,7 @@ def main():
             )
         if target_key and "env" in st.session_state:
             st.markdown("---")
-            st.markdown("### 🌡 시간대별 기온 & 체감온도 예보 (08~19시)")
+            st.markdown("### 🌡 시간대별 기온 예보 & 그늘 보정 온도 (08~19시)")
             env = st.session_state.env
             avg_shadow = st.session_state.avg_shadow.get(target_key)
             if avg_shadow is None:
@@ -601,8 +601,8 @@ def main():
                     st.info(
                         "🔥 으악! 지금이 **제일 더운 시간**이야. 꼭 쿨링 경로로 가야 해!"
                     )
-                y_min = df[["temp", "feels_like"]].min().min() - 1
-                y_max = df[["temp", "feels_like"]].max().max() + 1
+                y_min = df[["temp", "shade_adjusted_temp"]].min().min() - 1
+                y_max = df[["temp", "shade_adjusted_temp"]].max().max() + 1
                 base = alt.Chart(df.reset_index()).encode(
                     x=alt.X("hour:O", title="시간")
                 )
@@ -613,8 +613,8 @@ def main():
                         title="기온(℃)",
                     )
                 )
-                line_feels = base.mark_line(color="#339AF0").encode(
-                    y=alt.Y("feels_like:Q", title="체감온도(℃)")
+                line_shade = base.mark_line(color="#339AF0").encode(
+                    y=alt.Y("shade_adjusted_temp:Q", title="그늘 보정 온도(℃)")
                 )
                 vline = (
                     alt.Chart(pd.DataFrame({"hour": [time_slot]}))
@@ -640,11 +640,11 @@ def main():
                     .encode(x="hour:O", y="temp:Q", text="label")
                 )
                 chart = (
-                    line_temp + line_feels + vline + peak_point + peak_label
+                    line_temp + line_shade + vline + peak_point + peak_label
                 ).properties(height=400, background="#FDFBF7")
                 st.altair_chart(chart, use_container_width=True)
                 st.caption(f"🌡️ {max_hour:.0f}시에 최고기온 {max_temp:.1f}℃ 예상됩니다.")
-                st.caption("체감온도는 선택한 경로의 평균 그늘 비율을 반영합니다.")
+                st.caption("그늘 보정 온도 = 기온 − 평균 그늘 비율 × 5℃인 가정 기반 지표입니다. Heat Index·WBGT·UTCI가 아니며, 시간별 그늘 변화는 반영하지 않습니다.")
             else:
                 st.info("기온 예보 데이터를 불러올 수 없습니다.")
     else:
