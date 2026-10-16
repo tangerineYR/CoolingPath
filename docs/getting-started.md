@@ -4,8 +4,8 @@
 Python **3.11 이상**에서 저장소 루트를 기준으로 실행합니다.
 
 ```bash
-git clone https://github.com/tangerineYR/CoolingPath.git
-cd CoolingPath
+git clone https://github.com/tangerineYR/cooling-path.git
+cd cooling-path
 python -m venv .venv
 ```
 
