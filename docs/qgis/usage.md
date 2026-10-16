@@ -1,6 +1,6 @@
 # CoolingPath QGIS 포트폴리오 프로젝트
 
-저장소를 내려받은 뒤 **`docs/qgis/CoolingPath_QGIS.qgz`**를 QGIS에서 엽니다.
+저장소를 내려받은 뒤 **`docs/qgis/CoolingPath_QGIS.qgz`** 를 QGIS에서 엽니다.
 QGZ 파일 하나만 내려받으면 건물·도로 SHP를 찾을 수 없으므로 저장소 디렉터리
 구조를 유지해야 합니다. QGIS 3.40.6에서 개방과 렌더링을 확인했습니다.
 앱 설치, API 키, 인터넷 배경지도는 필요하지 않습니다.
